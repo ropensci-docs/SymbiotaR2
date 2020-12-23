@@ -1,0 +1,10 @@
+pandoc: '2.5'
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  SymbiotaR2-intro: SymbiotaR2-intro.html
+last_built: 2021-07-16T10:01Z
+urls:
+  reference: https://docs.ropensci.org/SymbiotaR2/reference
+  article: https://docs.ropensci.org/SymbiotaR2/articles
+

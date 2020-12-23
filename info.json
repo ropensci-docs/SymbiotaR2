@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "ce0ad4ddaa15d34f527b6844ef9de07430e56113",
+    "author": "Austin Koontz <austinkoontz11@gmail.com>",
+    "time": "2020-12-23 00:00:21",
+    "files": 1,
+    "merge": false,
+    "message": "Update README.md\n\nAdded JOSS badge"
+  },
+  "remote": "https://github.com/ropensci/SymbiotaR2",
+  "pkg": "SymbiotaR2"
+}
