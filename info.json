@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "f0231b51066d15e7d6a64baf5c63eb37236a23bd",
+    "author": "Austin Koontz <austinkoontz11@gmail.com>",
+    "time": "2022-01-26 22:26:15",
+    "files": 1,
+    "merge": true,
+    "message": "Merge pull request #10 from ropensci/maelle-patch-1\n\nFix NEWS formatting for pkgdown"
+  },
+  "repo": "https://github.com/ropensci/SymbiotaR2",
+  "pkg": "SymbiotaR2"
+}
