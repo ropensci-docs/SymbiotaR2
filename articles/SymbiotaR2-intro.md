@@ -1,0 +1,230 @@
+# Downloading data from Symbiota2 portals in R
+
+## Overview
+
+[Symbiota](https://symbiota.org/docs/) is an open-source content
+management system built for the purpose of integrating virtual
+biodiversity databases. Currently used by over 700 natural history
+collections, containing more than 30 million specimens, Symbiota is an
+essential tool for digitizing biological specimen data. In an effort to
+expand modularity and accessibility,
+[Symbiota2](https://symbiota.org/docs/symbiota2-project/) is an
+improved, refactored version of the original Symbiota core code
+structure, designed based on user feedback. While packages do exist for
+accessing Symbiota portals (for instance, see the
+[rSymbiota](https://github.com/FranzKrah/rSymbiota) package), R users
+currently cannot access the data offered by Symbiota2. Here, we describe
+**SymbiotaR2**, a package built to address this need by allowing users
+to access Symbiota2 portals in an R environment.
+
+Below, we provide a general workflow for using SymbiotaR2, a description
+of the command structure, code for installing the package, and examples
+of using SymbiotaR2 functions. The GitHub page for the Symbiota2
+software can be found [here](https://github.com/Symbiota2/Symbiota2),
+and instructions for setting up a new Symbiota2 portal can be found on
+the [documentation
+site](https://symbiota2.github.io/Symbiota2/setup/installation.html).
+Finally, a review of the original Symbiota platform is offered in [Gries
+et al., 2014](https://bdj.pensoft.net/articles.php?id=1114).
+
+## Workflow
+
+SymbiotaR2 allows R users to download data from specified Symbiota2
+portals, granting access to thousands of digitized flora and fauna
+specimen records across the United States. It does this by querying
+endpoints in the Symbiota2 API, then downloading a JSON object
+containing the requested data to a temporary directory on the local
+computer. The JSON object is then converted into an R format that is
+straightforward and easy to use. The general argument structure of all
+SymbiotaR2 functions allows users to specify whether they want to pull a
+single resource or a collection of resources from the API.
+
+In general, there are four steps for using SymbiotaR2:
+
+1.  Determine the URL of the Symbiota2 portal you wish to access data
+    from; its “API endpoint” is probably its web address with “api”
+    appended to it (see below). Remember that your particular portal may
+    not have enabled data download.
+2.  Load the SymbiotaR2 package (see [Installation](#inst) below for
+    install instructions).
+3.  Find the function corresponding to the kind of data you wish to pull
+    from the Symbiota2 portal (e.g., `Coordinates` for co-ordinate
+    data).
+    - Functions are named after the resources they download, and are
+      grouped according to the relevant API call.
+    - Note that, because each Symbiota2 portal owner can load their own
+      plugins into the API, it’s possible that not every API endpoint
+      will be covered.
+    - You can find a full list by typing
+      [`library(help=SymbiotaR2)`](https://rdrr.io/r/base/library.html)
+4.  Call the function, specifying the Symbiota2 portal using the `url`
+    argument (see [Example](#ex) and [Portal Specification](#portspec)
+    below).
+
+## Installation
+
+SymbiotaR2 can be downloaded by calling:
+
+    library(devtools)
+    install_github("pearselab/SymbiotaR2")
+
+Once it has passed peer review, you will be able to install it by
+running:
+
+    install.packages("SymbiotaR2")
+
+Load the package using:
+
+    library(SymbiotaR2)
+
+#### Portal Specification
+
+`SymbiotaR2_setup` will save to your `.Rprofile` a default URL, for
+automatic reference. Specifying a different `url` argument will let you
+refer to a portal besides the default. The code below demonstrates this:
+
+    SymbiotaR2_setup("http://imaginary-symbiota-portal.com/api", append=TRUE)
+
+    Coordinates() # Download from http://imaginary-symbiota-portal.com/api
+    Coordinates("http://another-imaginary-portal.com/api") # Download from a different portal
+
+## Example
+
+SymbiotaR2 consists of commands pulling from the Checklists,
+Collections, Crowdsource, Exsiccati, Glossary, ImageProcessor, Key,
+Media, Occurrence, Reference, Taxa, Traits, and UserRoles API families
+of the specified Symbiota2 portal. Note that because each Symbiota2
+portal owner can load their own plugins into the API, it’s possible that
+not every possible API endpoint from the specified Symbiota2 instance
+will be covered.
+
+Below, we provide an example of pulling a single `Taxa` resource into
+the R environment, by specifying an `id` argument in the command call
+(using a random, nonexistent URL). Please note that this example won’t
+work for users (as they need to specify a working Symbiota2 portal they
+can access), but is included to demonstrate typical usage:
+
+    myURL <- "http://imaginary-symbiota2-portal.com/api"
+    myTaxa <- Taxa(id = 12, url = myURL)
+    str(myTaxa)
+
+    List of 23
+     $ @context             : chr "/api/contexts/Taxa"
+     $ @id                  : chr "/api/taxa/12"
+     $ @type                : chr "Taxa"
+     $ id                   : num 12
+     $ rankId               : chr "/api/taxa/ranks/31"
+     $ scientificName       : chr "Polygonum bistortoides"
+     $ unitIndicator1       : logi NA
+     $ unitName1            : chr "Polygonum"
+     $ unitIndicator2       : logi NA
+     $ unitName2            : chr "bistortoides"
+     $ unitIndicator3       : logi NA
+     $ unitName3            : logi NA
+     $ author               : chr "Pursh"
+     $ phylogenySortSequence: logi NA
+     $ status               : chr "AZTT-USDA Plants consistant"
+     $ source               : logi NA
+     $ notes                : logi NA
+     $ hybrid               : logi NA
+     $ securityStatus       : num 0
+     $ modifiedTimestamp    : logi NA
+     $ initialTimestamp     : chr "2019-01-11T21:44:39+00:00"
+     $ modifiedUserId       : logi NA
+     $ taxaAuthorityId      : list()
+
+If a collection of resources from the Symbiota2 API needs to come into
+the R environment, then the `page` argument can be specified in place of
+`id` to retrieve a list of resources (here, as a `data.frame`):
+
+    myURL <- "http://imaginary-symbiota2-portal.com/api"
+    myCoordinates <- Coordinates(page = 1, url = myURL)
+    str(my.Coordinates)
+
+    'data.frame':   5 obs. of  2 variables:
+     $ latitude : num  32.2 32.2 32.2 32.2 32.2
+     $ longitude: num  -111 -111 -111 -111 -111
+
+If neither an `id` or a `page` argument is provided, the functions are
+written to return the list of resources at `page = 1`. Once downloaded,
+these R objects can be taken and manipulated as needed for any
+downstream processes.
+
+## Troubleshooting
+
+The code for SymbiotaR2 is structured hierarchically, and includes
+parameter type checking to ensure arguments are provided in the proper
+format. Additionally, all commands include a URL check (`.check.url`),
+which confirms the following:
+
+1.  URL provided refers to an accessible website, and
+2.  that website is a working Symbiota2 portal.
+
+The second step consists of an API call made at the end of the URL
+check. If either step fails, the error below will be triggered:
+
+    Error in .check.url(badURL) : 
+      URL http://incorrect-portal-address.com/api cannot be reached; is it a valid Symbiota2 portal API?
+
+If this error is received, make sure your portal address is spelled
+correctly. Note that functions are designed such that a forward slash
+(`/`) at the end of the URL is optional. If your URL is correctly
+spelled, make sure that the Symbiota2 portal manager has allowed you
+access to the portal.
+
+#### (For developers) Unit tests
+
+All SymbiotaR2 functions come with tests, for both pulling a single
+SymbiotaR2 resource (using the `id` argument), or a collection of
+resources (using `page`). Tests for each function are contained in the
+`tests/testthat` directory. Running these tests requires you have access
+to a fully configured SymbiotaR2 test instance, complete with demo data,
+which is both time-consuming to setup and then time/bandwidth-consuming
+to run the tests. We therefore release cached data downloads, generated
+using `vcr`, for use with this package. Information about the `vcr`
+package can be found on [the `vcr` page on
+GitHub](https://github.com/ropensci/vcr).
+
+To run the package tests, do the following:
+
+1.  Build the package as you would normally, with something like
+    `R CMD build SymbiotaR2` from the command line.
+2.  Check the package as you would normally, with something like
+    `R CMD check SymbbiotaR2_0.0-1` from the command line.
+
+If you want to add new tests, or new functions that address new API
+endpoints, do the following:
+
+1.  Setup a Symbiota2 instance with the canned example data.
+2.  If you are adding support for a new API endpoint, make a new file in
+    `tests/testthat` for your tests. Otherwise, add to one of the
+    existing files.
+3.  Write your test, following the coding style of the other tests,
+    particularly with respect to setting up the `vcr` *cassette*. Note
+    that the folder `fixtures` contains the cassettes, and that
+    `SymbiotaR2` makes use of the file
+    `tests/testthat/helper-SymbiotaR2.R` to setup the automatic tests.
+    See point 4 below.
+4.  When writing/checking your test, set the `url` variable at the top
+    of the script to be wherever your test instance is. When committing
+    your code to submit a pull request (see point 5), change it to the
+    address at the top of the other tests (currently
+    `http://a02235015-6.bluezone.usu.edu/api/`).
+5.  When you are finished, submit a pull request to the `master` branch
+    of this repository. Please use the pull request template and follow
+    the contributor guidelines.
+
+Here is an example of what a piece of testing code may look like:
+
+    context("AccessStats")
+    vcr::use_cassette(name = "AccessStats_id", {
+      data <- AccessStats(id = 4, url = url)
+    })
+    test_that("AccessStats_id", {
+      expect_equal(length(data), 12)
+      expect_type(data, "list")
+    })
+
+The `data <- AccessStates(url = url, id = 4)` line is the Symbiota2
+call, and the `test_that` block below it contains the test
+conditions–here, that the `data` object is a `list` of length 12.
